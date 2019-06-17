@@ -1,0 +1,38 @@
+
+# 请求url获取xml数据
+import requests
+
+url = 'https://comment.bilibili.com/78830153.xml'
+
+r = requests.get(url)
+
+r.encoding = 'utf8'
+
+# 解析xml
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(r.text, 'lxml')
+d = soup.find_all('d')
+
+# print(d[:10])
+
+# for循环生成弹幕字典
+import datetime
+
+dlst = []
+n = 0
+for i in d:
+    n += 1
+    danmuku = {}
+    danmuku['弹幕'] = i.text
+    danmuku['网址'] = url
+    danmuku['时间'] = datetime.date.today()
+    dlst.append(danmuku)
+
+    print('获得%i数据' % n)
+
+# 写入excel
+import pandas as pd
+
+df = pd.DataFrame(dlst)
+df.to_excel('b弹幕数据.xlsx')
